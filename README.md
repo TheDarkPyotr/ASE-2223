@@ -6,5 +6,5 @@
 
 The official course's syllabus can be found [here](./syllabus.pdf).
 
-**Disclaimer**: This notes **surely** contains errors and typos: if you find some please contribute to mantain the notes updated and correct by cloning the repository. 
+**Disclaimer**: This notes **surely** contains errors and _topos_: if you find some please contribute to mantain the notes updated and correct by cloning the repository. 
 
