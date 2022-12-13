@@ -2218,11 +2218,11 @@ Here an example of \textbf{SQL poisoning attack}: attacker can do injection atta
 \end{verbatim}
 Without \textbf{check input validity}, this query can be exploited by inserting \textcolor{red}{\texttt{‘110010010’ OR '1'='1'}}.
 \subsubsection{Session Hijacking}
-Another type of attacks is represented by \textbf{session hijacking}: a \textbf{session} is a period of time during which user's authentication with a web app is valid. Generally the session cookie (\textit{the token}) is sent from server to client which sends the token in each HTTP request so user doesn't have to re-authenticate for subsequent system interactions. The session is closed when user logs out or when system times out. In this type of attack the attacker acquires valid session cookie and impersonates a legitimate user: he can get the token via another type of attack called \textbf{corss-site scripting attack} or by traffic monitoring (\textit{easy on un-secured WiFi networks and unencrypted HTTP request}).
+Another type of attacks is represented by \textbf{session hijacking}: a \textbf{session} is a period of time during which user's authentication with a web app is valid. Generally the session cookie (\textit{the token}) is sent from server to client which sends the token in each HTTP request so user doesn't have to re-authenticate for subsequent system interactions. The session is closed when user logs out or when system times out. In this type of attack the attacker acquires valid session cookie and impersonates a legitimate user: he can get the token via another type of attack called \textbf{cross-site scripting attack} or by traffic monitoring (\textit{easy on un-secured WiFi networks and unencrypted HTTP request}).
 We can distinguish two types of hijacking:
 \begin{itemize}
-	\item Passive: attacker monitors client-server traffic looking for valuable information (\textit{like password or credit card numbers})
-	\item Attive: attacker carries out user actions on server
+	\item \textbf{Passive}: attacker monitors client-server traffic looking for valuable information (\textit{like password or credit card numbers})
+	\item \textbf{Attive}: attacker carries out user actions on server
 \end{itemize}
 The \textbf{defenses} adopted can be to encrypt client-server network traffic via HTTPS or use multi-factor authentication to require confirmation of new actions that may be damaging.\\
 As mentioned, we describe the \textbf{Cross-site scripting attack} (\ref{image85}) via an example: An attacker adds malicious Javascript code to the web page that is returned from a server to a client and this script is executed when the
@@ -2249,12 +2249,12 @@ Authentication is the process of ensuring that a user of your system is who they
 personalize their experience of using your product.
 There are many approach to authenticate an user:
 \begin{itemize}
-	\item Knowledge-based authentication relies on users providing secret, personal
+	\item \textbf{Knowledge-based} authentication relies on users providing secret, personal
 	information when registering
-	\item Possession-based authentication relies on users having physical device that can be
+	\item \textbf{Possession-based} authentication relies on users having physical device that can be
 	linked to authenticating system and that generates/displays information known to
-	authenticating system (e.g. system sends code to user’s phone number, or specialpurpose device that generates one-time codes)
-	\item Attribute-based authentication relies on a unique biometric attribute of the user (e.g.
+	authenticating system (e.g. system sends code to user’s phone number, or special purpose device that generates one-time codes)
+	\item \textbf{Attribute-based} authentication relies on a unique biometric attribute of the user (e.g.
 	fingerprint, face) 
 \end{itemize}
 Knowledge-based authentication often employed for products delivered as cloud services but there are some \textbf{weakness} of password based authentication, like:
@@ -2266,8 +2266,7 @@ Knowledge-based authentication often employed for products delivered as cloud se
 	credentials have been stolen
 \end{itemize}
 Some defences are to force users set strong password and add knowledge-based authentication (\textit{e.g. user must answer questions}). Surely the level of authentication depends on your product: if there is no need to store confidential information so knowledge-based authentication is enough, differently if there is the need to store such information it's better to enable two-factor authentication.\\
-Implementing a secure and reliable authentication system is expensive and timeconsuming
-Even if using available toolkits and libraries (e.g. OAuth), there is still a lot of programming effort involved so usually authentication is outsourced with a federated identity system.
+Implementing a secure and reliable authentication system is expensive and time consuming: even if using available toolkits and libraries (e.g. OAuth), there is still a lot of programming effort involved so usually authentication is outsourced with a federated identity system.
 \subsubsection{Federated identity}
 Federated identity is an approach to authentication where you use an external authentication service: ‘Login with Google’ and ‘Login with Facebook’ are widely used examples of authentication using federated identity.
 The \textbf{advantage} of federated identity for a user is that they have a single set of credentials that are stored by a trusted identity service. Instead of logging into a service directly, a user provides their credentials to a known service who confirms their identity to the authenticating service.
@@ -2359,7 +2358,7 @@ TLS encryption depends on a digital certificate that is sent from the web server
 As a product provider you inevitably store information about your users and, for cloud-based products, user data. \textbf{Data encryption} can be used to reduce the damage that may occur from data
 theft: if information is encrypted, it is impossible, or very expensive, for thieves to access and use the unencrypted data. You should encrypt user data whenever it's practicable to do so:
 \begin{itemize}
-	\item Data in transi: When transferring the data over the Internet, you should always use the https rather
+	\item Data in transit: When transferring the data over the Internet, you should always use the https rather
 	than the http protocol to ensure encryption.
 	\item Data at rest: If data is not being used, then the files where the data is stored should be encrypted
 	so that theft of these files will not lead to disclosure of confidential information.
@@ -2419,9 +2418,9 @@ Discussing security in microservices, we need to make a comparison respect to mo
 
 In a monolith architecture a security screening it's execute once and request are dispatched to corresponding componenet. Differently, in microservices each microservice has to carry out independent security screening that may need to connect to a remote security token service. The repeated distributed security checks surely also have an impact on services performance. As work-around we can use the notion of \textbf{trust-the-network} for which we skip security checks at each (\textit{internal}) microservices: this is a different philosophy compared to the industry trends towards a \textbf{zero-trust} networking principles. \\
 As mentioned, service-to-service communication must take place on protected channels: for example, if we use \textbf{certificates}, each microservice must be provisioned with a certificate and a corresponding private key to authenticate itself to another microservice during interactions. The recipient microservice must know how to validate the certificate associated with calling microservice: there is a way to boostrap trust between microservices by introducing \textbf{automation} for passing secrets to a large-scale deployments of hundreds of microservices.\\
-Another point is represented by \textbf{tracing} requests: we define a \textit{log} as the recording of an event of a service. Logs can be aggregated to produce metrics that reflect the system state and that may trigger alert. Traces help track a request from point where it eneters the system to the point where it leaves the system. Differently from monolithic applications, a request to a microservices deployment may span multiple microservices so \textbf{correlating request among microservices is challenging}: some usefull tools are represented by \textbf{Grafana, Prometheus} to monitor incoming request of by \textbf{Jaeger and Zipkin} for distributed racing. \\
+Another point is represented by \textbf{tracing} requests: we define a \textit{log} as the recording of an event of a service. Logs can be aggregated to produce metrics that reflect the system state and that may trigger alert. Traces help track a request from point where it eneters the system to the point where it leaves the system. Differently from monolithic applications, a request to a microservices deployment may span multiple microservices so \textbf{correlating request among microservices is challenging}: some usefull tools are represented by \textbf{Grafana, Prometheus} to monitor incoming request or by \textbf{Jaeger and Zipkin} for distributed racing. \\
 As mentioned, \textbf{containers are immutable server} so they don't change state after spin up but for each service we need to mantain a dynamic list of allowed clients and dynamic set of Access-Control policies so each service must also mantain its own credentials which need to be rotated periodically (\textit{by keeping credentials in container filesystem and inject them at boot time}). \\
-In a distributed environment the sharing of user context is harder than in a monolithic architecture: we need to build trust between microservices to that receiving microservice accepts user context passed from the calling microservice. A popular solution is to use \textbf{JSON Web Token (JWT)} to share user contxt among microservices: the key idea is that the message carrying attributes ina cryptographically safe way (\textit{by encryption, encoding or both the data to transfer}).
+In a distributed environment the sharing of user context is harder than in a monolithic architecture: we need to build trust between microservices to that receiving microservice accepts user context passed from the calling microservice. A popular solution is to use \textbf{JSON Web Token (JWT)} to share user context among microservices: the key idea is that the message carrying attributes ina cryptographically safe way (\textit{by encryption, encoding or both the data to transfer}).
 
 To summarize what we said:
 \begin{itemize}
@@ -2455,16 +2454,15 @@ The analysis result in a taxonomi with \textbf{10 refactoring} associated with \
 Here we analyze some potential properties violation by identify a smell and propose a refactoring:
 \begin{itemize}
 	\item \textit{Property: } \textbf{Confidentiality}, \textit{Smell:} \textbf{Insufficient access control} \textit{Refactoring}: \textbf{Use OAuth 2.0} \\
-	 Microservice-based application does not enact access control in some microservices. Potential “confused deputy problem” with attacker getting data it shouldn’t be able to get
-	 Potential violation of confidentiality of data (and business functions).Client permissions need to be verified at request time. Client identity should be verified without introducing extra latency and contention with frequent calls to a centralized service
+	 Microservice-based application does not enact access control in some microservices. Potential “confused deputy problem” with attacker getting data it shouldn’t be able to get so there is a potential violation of confidentiality of data (and business functions).Client permissions need to be verified at request time so client identity should be verified without introducing extra latency and contention with frequent calls to a centralized service. \\
 	 Most suggested refactoring are to employ OAuth 2.0
 	 by using token-based security framework for delegated access control and by allowing resource owner grant client access to a resource on its behalf. The access is granted for limited time and with limited scope. 
 	 
 	 \item \textit{Property: } \textbf{Confidentiality}, \textit{Smell:} \textbf{Publicly accessible microservices} \textit{Refactoring}: \textbf{Add API gateway} \\
-	 Some microservices directly accessible by external clients: each microservice must check authenticationa nd authorization for each request. This increase the exposure of credentials so increase the likelihood of confidentiality violations with an higher cost of application maintenance.\\
+	 Some microservices directly accessible by external clients: each microservice must check authentication and authorization for each request. This increase the exposure of credentials so increase the likelihood of confidentiality violations with an higher cost of application maintenance.\\
 	 Most cited refactoring is to add an API gateway: microservices are not directly accesible by external client and can enforce authentication, authorization and message content validation by allowing the microservice to stay behing a firewall. 
 	 
-	 \item \textit{Property: } \textbf{Confidentiality, Integrity}, \textit{Smell:} \textbf{Unnecessary privileges to microservices} \textit{Refactoring}: \textbf{Follow the least privilege principle} \\
+	 \item \textit{Property: } \textbf{Confidentiality, Integrity}, \textit{Smell:} \textbf{Unnecessary privileges to microservices} \textit{Refactoring}: \textbf{Follow the least privilege principle} 
 	 
 	 Microservices are granted unnecessary access levels, permissions, or functionalities that are not
 	 needed to deliver their business functions so resources are unnecessarily exposed: this increase the attack surface against confidentiality and integrity. The refactoring propose to use the \textbf{Least privilege principle} for which all running code have the permissions only needed to complete the required thask and no more. 
@@ -2474,13 +2472,13 @@ Here we analyze some potential properties violation by identify a smell and prop
 	 Use of “home-made” crypto code can cause confidentiality, integrity and authenticity issues: this can get even worse than no encryption (false sense of security). The solution is to exploit encryption libraries heavily tested and patched and recommend to avoid experimental encryption algorithms.
 	 
 	 
-	  \item \textit{Property: } \textbf{Confidentiality, Integrity, Authenticty}, \textit{Smell:} \textbf{"Non-encrypted data exposure} \textit{Refactoring}: \textbf{Encypt all sensitive data at rest} \\
+	  \item \textit{Property: } \textbf{Confidentiality, Integrity, Authenticty}, \textit{Smell:} \textbf{Non-encrypted data exposure} \textit{Refactoring}: \textbf{Encypt all sensitive data at rest} \\
 	 
 	 Microservice-based application accidentally exposes sensitive data so intruders can access or modify data, including credentials. The solution is to encrypt all sensitive data at rest and decrypt only when needed by exploiting DBMSs support for automatic encryption or OSs support for disk-level encryption. Other solution are to use application-level encryption or to encrypt also cached data. 
 	 
 	 \item \textit{Property: } \textbf{Confidentiality, Integrity, Authenticty}, \textit{Smell:} \textbf{Hardcoded secrets} \textit{Refactoring}: \textbf{Encrypt secrets at rest} \\
 	 
-	 Hardcoded secrets (e.g. API keys, client secrets, credentials) contained in microservice source code or in application deployment scripts (e.g. environment variables passing secrets in a Docker Compose spec) represent a security flaw. 	 Never store secrets in environment variables because they could be accidentaly exposed. The solution is to encrypt secret at rest by do not sotre credentials alongside application source code but use effective mechanism to pass secrets at runtime from a secured source.
+	 Hardcoded secrets (e.g. API keys, client secrets, credentials) contained in microservice source code or in application deployment scripts (e.g. environment variables passing secrets in a Docker Compose spec) represent a security flaw. 	 Never store secrets in environment variables because they could be accidentaly exposed. The solution is to encrypt secret at rest by do not store credentials alongside application source code but use effective mechanism to pass secrets at runtime from a secured source.
 	 
 	 
 	 \item \textit{Property: } \textbf{Confidentiality, Integrity, Authenticty}, \textit{Smell:} \textbf{Non-secured service-to-service 	communications} \textit{Refactoring}: \textbf{Use mutual TLS} \\
@@ -3009,7 +3007,7 @@ Petri nets consists of \textbf{places, transitions} and \textbf{direct arcs} con
 	\caption{}
 	\label{image78}
 \end{figure}
-System dynamics represented by\textbf{tokens}, whose distribution over the places determines the state of modelled system. A \textbf{transition} \textit{can fire} if there is a token in each of its input places (\ref{image79}). 
+System dynamics represented by \textbf{tokens}, whose distribution over the places determines the state of modelled system. A \textbf{transition} \textit{can fire} if there is a token in each of its input places (\ref{image79}). 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\textwidth]{image79}
@@ -3023,7 +3021,7 @@ If a transition \textit{fires}, one token is removed from each input place and o
 	\caption{}
 	\label{image80}
 \end{figure}
-The idea behing the workflow nets are to enhance petri news with concepts and notations that ease the representation of business processes. Like petri nets, workflow nets ofcus on the control flow behhaviour of a process:
+The idea behind the workflow nets are to enhance petri news with concepts and notations that ease the representation of business processes. Like petri nets, workflow nets focus on the control flow behaviour of a process:
 \begin{itemize}
 	\item transitions represent activities
 	\item places represent conditions
