@@ -2148,6 +2148,7 @@ It's noticeable to remark that proposed refactoring at \textbf{architectural lev
 Referring to \ref{image72} upper refactoring can be ok if the \texttt{mB} can be efficiently support multiple topics. Differently, lower refactoring introduces a new \texttt{mB}. 
 
 \subsubsection{MicroFreshener example}
+Some MicroFreshener refactoring proposal are showed in \ref{image-microfreshener} and \ref{image-microfreshener2}. \\
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{image_example_microfreshener}
@@ -2160,11 +2161,56 @@ Referring to \ref{image72} upper refactoring can be ok if the \texttt{mB} can be
 	\caption{}
 	\label{image-microfreshener2}
 \end{figure}
+Another example involve a the \texttt{microase} application: the application architecture design replicated in MicroFreshener is shown in \ref{image-microase}.
+Here we deep dive into relevated smells and proposed refactoring by MicroFreshener:
+\begin{itemize}
+	\item \textbf{No API gateway}: The no API gateway smell occurs whenever the external clients of an application directly
+	interact with some internal services. If one of such services is scaled out, the horizontal
+	scalability of microservices may get violated because external clients may keep invoking the
+	same instance, without reaching any replica.\\
+	The proposed solution is to \textbf{Add an API Gateway message router (MR)}: by using the modeler we need to delete the arrow from \texttt{Ext user} to \texttt{gw}, add communication pattern node message router and connect it with \texttt{ext user} and all services, as pictured in \ref{microfresh-refact-1}. 
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{image-microf-ref1}
+		\caption{}
+		\label{microfresh-refact-1}
+	\end{figure}
+
+	\item \textbf{Shared Persistency}: The shared persistency smell occurs whenever multiple services access or manage the same
+	DB, possibly violating the decentralisation design principle (i.e. business logic of an
+	application should be fully decentralised and distributed among its microservices, each of
+	which should own its own domain logic).\\ The proposed solution is to \textbf{Add a adata manager} but it adds the complexity of a new microsrvices to implement and mantain. A smarter refactoring consists of using \texttt{stats} as data manager (\textit{noticing that it represent a natural candidate for such role}) obtaining the diagram shown in \ref{microfresh-refact-2}.
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{image-microf-ref2}
+		\caption{}
+		\label{microfresh-refact-2}
+	\end{figure}
+
+	\item \textbf{Wobbly service interaction}: The interaction of a microservice $m_{i}$ with another microservice $m_{f}$ is wobbly when a failure in  $m_{f}$ can result in
+	triggering a failure also in  $m_{i}$. This typically happens when  $m_{i}$ is directly consuming one or more functionalities
+	offered by  $m_{f}$, and  $m_{i}$ is not provided with any solution for handling the possibility of  $m_{f}$ to fail and be 	unresponsive (which can lead to failure cascades). We have spotted another modelling error:
+	Flask requests are equipped with 30 second timeouts by default: the proposed solution is to \textbf{Use timeout}. 
+	
+	\item \textbf{Endpoint-based interaction}: The endpoint-based interaction smell occurs in an application when one or more of its microservices invoke a specific
+	instance of another microservice (e.g., because its location is hardcoded in the source code of the microservices invoking it,
+	or because no load balancer is used). If this is the case, when scaling out the latter microservice by adding new replicas,
+	these cannot be reached by the invokers, hence only resulting in a waste of resources. The proposed solution is to \textbf{Add Service Discovery}. 
+	 
+\end{itemize}
+Depending on the Deployment, the architecture might change: by using \textbf{Docker compose deployment} the overlay network DNS of Docker acts as a dynanic service discovery for running service instances so there aren't smells. The same happen for \textbf{Kubernetes deployment} in which the \texttt{Deployment} object handles the replica set and the \texttt{Service} object introduces a message router among instances, deleting any of the already mentioned smells. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{image-microase}
+	\caption{}
+	\label{image-microase}
+\end{figure}
+
+
 
 \chapter{Security and Privacy}
  Software security should always be a high priority for product developers
-and their users: if you don’t prioritize security, you and your customers will inevitably suffer losses from malicious attacks. In the worst case, these attacks could can put product providers out of
-business:  if their product is unavailable or if customer data is compromised, customers are liable to cancel their subscriptions. Even if they can recover from the attacks, this will take time and effort that would have been better spent working on their software.
+and their users: if you don’t prioritize security, you and your customers will inevitably suffer losses from malicious attacks. In the worst case, these attacks could can put product providers out of business:  if their product is unavailable or if customer data is compromised, customers are liable to cancel their subscriptions. Even if they can recover from the attacks, this will take time and effort that would have been better spent working on their software.
 There are three types of security threat (\ref{image83}):
 \begin{itemize}
 	\item Availability threats: An attacker attempts to deny access to the system for legitimate users
@@ -2523,8 +2569,8 @@ To decide if refactor or not refactor we need to have a complete overview of \te
 \section{OWASP API Security}
 Complexity of source code leads to more security vulnerabilities so exponential increase of defects as number of lines of code increases. Functional and security testing is utterly important: we distinguish two types of testing:
 \begin{itemize}
-	\item Static (\textit{Bandit-like})
-	\item Dynamic
+	\item Static: \textit{Bandit} is a static analysis tool designed to find common security issues in Python code, by exploiting known patterns (plugins).
+	\item Dynamic: see next
 \end{itemize}
 First, we discuss about \textbf{API-based app} in a context where client devices are getting more powerful: the logic moves from backend to frontend, for example servers are used more as data proxies and client render the data. Client also can consume raw data and mantain/monitor user's status. This implies that the HTTP request a have a lots of parameter and API disclose these information on implementation side. \\
 API expose microservices to consumers: it's therefore important to make them secure and avoid known pitfalls. The \textbf{top 10 API Vulnerabilities} are:
@@ -2690,6 +2736,8 @@ API expose microservices to consumers: it's therefore important to make them sec
 		
 	\end{itemize}
 \end{enumerate}
+
+
 \chapter{DevOps and Code Management}
 Traditionally, separate teams were responsible software development, software release and software support.
 The development team passed over a ‘final’ version of the software to a release team. This team then built a release version, tested this and prepared release documentation before releasing the software to
@@ -2998,6 +3046,47 @@ In pictures \ref{image75}, \ref{image76}, \ref{image77} we show two complex exam
 	\label{image77}
 \end{figure}
 
+\subsection{Camunda}
+ Camunda is a framework supporting BPMN for workflow and process
+automation. It provides a RESTful API which allows you to use your language of
+choice as shown in \ref{image-camunda-arch}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{camunda-arch}
+	\caption{Camunda workflow}
+	\label{image-camunda-arch}
+\end{figure}
+
+Workflows are defined in BPMN which can be graphically modeled
+using the Camunda Modeler. Camunda has 2 \textit{"usage pattern"} \textbf{A} and \textbf{B}:
+\begin{itemize}
+	\item \textbf{A - Endpoint-based integration}:After defining a BPMN
+	process, Camunda can directly call services via \textit{built-in connectors}.It supports both RESTful and 	SOAP services in this way.The main drawback is that it only alows scaling on process instance, NOT on microservices as pictured in \ref{image-camunda-a}. 
+	\item \textbf{B: Queue-based integration}: A more interesting pattern is
+	known as \textbf{External Task}: Units of work (Tasks) are
+	provided in a \textbf{Topic Queue} that can be polled by
+	RESTful workers, possibly interacting with 	microservices. This pattern allows scaling of \textbf{process instances} so allows to scale workers and microservices as shown in \ref{image-camunda-b}.
+	The \textit{"worker philosophy"} is that they call microservices and acquire tasks, not viceversa. 
+\end{itemize}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{camunda-pattern-A}
+	\caption{Camunda pattern A}
+	\label{image-camunda-a}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{camunda-pattern-B}
+	\caption{Camunda pattern B}
+	\label{image-camunda-b}
+\end{figure}
+The second pattern follows these steps, involving the relative components:
+\begin{itemize}
+	\item Process Engine: Creation of an external task instance
+	\item External Worker: Fetch and lock external tasks
+	\item External Worker \& Process Engine: Complete external task
+	instance
+\end{itemize}
 \section{Workflow nets}
 They're an extesion of \textbf{Petri nets}: it represent one of the best kwnown techniques  for specifying business processes in a formal and abstract way because graphical representation eases communications between different stakeholders, process properties can be formally analysed and various supporting tools are available\footnote{\textit{W.M.P. van der Aalst. The Application of Petri Nets to Workflow Management. The Journal of Circuits, Systems and Computers, 8(1):21-66, 1998.}}\\
 Petri nets consists of \textbf{places, transitions} and \textbf{direct arcs} connecting places and transitions. Transitions model \textbf{activities}, places and arcs model \textbf{execution constraints}. More on \textbf{Petri nets} can be found at \href{http://pages.di.unipi.it/brogi/note.pdf}{Petri nets in one page}.
