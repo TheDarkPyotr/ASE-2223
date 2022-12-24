@@ -2735,6 +2735,54 @@ API expose microservices to consumers: it's therefore important to make them sec
 		\item Define, limit, and enforce API outputs to prevent data leaks
 		
 	\end{itemize}
+
+
+		\item \textbf{IMPROPER ASSETS MANAGEMENT}: Attacker finds non-production versions of the API: such as staging, testing, beta or earlier versions - that are not as well protected, and uses	those to launch the attack.The \textbf{Use cases} are:
+	\begin{itemize}
+		\item DevOps, cloud, containers, K8S make having multiple deployments
+		easy (Dev, Test, Branches, Staging, Old versions)
+		\item Desire to maintain backward compatibility forces to leave old APIs
+		running
+		\item Old or non-production versions are not properly maintained
+		\item These endpoints still have access to production data
+		\item Once authenticated with one endpoint, attacker may switch to the
+		other
+		
+	\end{itemize}
+	There are several way to prevent this type of vulnerability:
+	\begin{itemize}
+		\item Inventory all API hosts
+		\item Limit access to anything that should not be public
+		\item Limit access to production data. Segregate access to production and
+		non-production data.
+		\item Implement additional external controls such as API firewalls
+		\item Properly retire old versions or backport security fixes
+		\item Implement strict authentication, redirects, CORS, etc. 
+		
+	\end{itemize}
+
+	\item \textbf {INSUFFICIENT LOGGING \& MONITORING}: Lack of proper logging, monitoring, and alerting let attacks go unnoticed.The \textbf{Use cases} are:
+	\begin{itemize}
+		\item Lack of logging, monitoring, alerting allow attackers to go unnoticed
+		\item Logs are not protected for integrity
+		\item Logs are not integrated into Security Information and Event
+		Management (SIEM) systems
+		\item Logs and alerts are poorly designed
+		\item Companies rely on manual rather than automated systems
+	\end{itemize}
+	There are several way to prevent this type of vulnerability:
+	\begin{itemize}
+		\item Log failed attempts, denied access, input validation failures, any
+		failures in security policy checks
+		\item Ensure that logs are formatted to be consumable by other tools
+		\item  Protect logs as highly sensitive
+		\item  Include enough detail to identify attackers
+		\item  Avoid having sensitive data in logs - If you need the information for
+		debugging purposes, redact it partially.
+		\item  Integrate with SIEMs and other dashboards, monitoring, alerting
+		tools
+		
+	\end{itemize}
 \end{enumerate}
 
 
@@ -3293,7 +3341,7 @@ A good practice is to \textbf{structure automated test in 3 parts}:
 	\item \textbf{Action}: Call the unit that is being tested with the test parameters
 	\item \textbf{Assert}: Assert what should hold if test executed successfully.
 \end{itemize}
-Of courde test code can include bugs so it's a good practice to reduce the chances of test errors by making tests as simple as possible and review all test along with the code that they test. \\
+Of course test code can include bugs so it's a good practice to reduce the chances of test errors by making tests as simple as possible and review all test along with the code that they test. \\
 \textbf{Unit tests} are the easiest to automate: good unit tests reduce (do not eliminate) need of feature tests thus GUI-based testing expensive to automate so API-based testing preferrable. Generally requires multiple assertions to check that feature executed as expected. 
 Differently, \textbf{system testing} involves testing system as a surrogate user: perform sequences of user action, execute manual system testing. There are testng tools that record series of actions and automatically reply them to avoid human error in manual testing. 
 
@@ -3328,7 +3376,7 @@ And some cons:
 	\item Difficult to apply TDD to system
 	testing
 	\item TDD discourages radical program
-	changea
+	changes
 	\item TDD leads you to focus on the tests
 	rather than on the problem you are
 	trying to solve
@@ -3342,7 +3390,7 @@ And some cons:
 \subsection{Security Testing}
  Security testing aims to find vulnerabilities that may be exploited by an
 attacker and to provide convincing evidence that the system is
-sufficiently secure. Finding vulnerabilities it's harder than finding bugs because you nust test for something that software should not do and generally normal functional test may not reveal any vulnerabilities. Also the software stack on which your product depends may contain vulnerabilities. 
+sufficiently secure. Finding vulnerabilities it's harder than finding bugs because you must test for something that software should not do and generally normal functional test may not reveal any vulnerabilities. Also the software stack on which your product depends may contain vulnerabilities. 
 Comprehensive security testing requires specialist knowledge of
 software vulnerabilities and approaches to testing that can find these
 vulnerabilities.\\
@@ -3411,4 +3459,189 @@ In \ref{image109} is represented the code reviews process setting. Generally one
 	code to be executed if the condition is true or false. If the code is not properly indented in nested 	conditionals this may mean that incorrect code is executed.
 \end{enumerate}
 As a code review example, \textbf{Spotify} identify as \textbf{Chapters} the team members working within a special area (e.g., front office developers, back office developers, database admins, testers) and a \textbf{Guild} is a community of members across the organization with shared interests (e.g., web technology, test automation), who want to share knowledge, tools code and practices. Usually Chapters (sometimes guilds) do code reviews for squads: are required two \textit{+1} to merge. 
+
+\section{Cloud-Edge Continuum}
+The goal of the Cloud-Edge Continuum is to extend the Cloud towards the IoT with a \textbf{distributed, heterogenous infrastructure} to better support \textbf{latency-sensitive applications}. To this aim, we need to deploy composite applications in a \textbf{QoS- and context-aware} manner on the Cloud-Edge Continuum, which is a challenging task. We need to consider both the application requirements like \textit{hardware, sofwate, QoS, etc} and also the \textbf{infrastructure properties} like \textit{heterogeneous, large, dynamic}: so we have 4 dimension to balance which are \textbf{cost, resource consumption, QoS, security}. Let's consider two general problems:
+\begin{itemize}
+	\item \textbf{Problem \#1: How to suitably place a composite
+	application on the Cloud-Edge Continuum}: We have different approaches like \textbf{MILP}, also known as \textit{Mixed-Integer Linear Programming}\footnote{See more at \href{https://it.mathworks.com/help/optim/ug/mixed-integer-linear-programming-algorithms.html}{MathWorks - MILP Algorithms}} which is very hard to read and slow to run. We have also the Machine Learning approach that is very suitable for dynamic infrastructure but lack of explainability. Finally, we hace the \textbf{declarative} approach like:
+	\begin{enumerate}
+		\item \textit{Declare what an eligibile placement is}:
+		\begin{center}
+			service S can be placed on node N \textbf{if} \\
+			the hardware reqs of S are met by N \textbf{and} \\
+			the IoT connection reqs of S are met by N \textbf{and} \\
+			the software reqs of S are met by N 
+		\end{center}
+		
+		\item \textit{Let the inference engine look for it}:
+		\begin{center}
+			services S1 … Sm can be placed on nodes N1 ... Nm \textbf{if}\\
+			service S1 can be placed on node N1 \textbf{and} \\
+			... \textbf{and} \\
+			service Sm can be placed on node Nm ... \textbf{and} \\
+			the QoS reqs of S1 ... Sm are met 
+		\end{center}
+	\end{enumerate}
+
+	\item \textbf{Problem \#2: How to suitably manage application
+		deployments in the Cloud-Edge Continuum (after
+		first deployment)}: use the concept of \textbf{Continous Reasoning} by exploiting compositionality to differentially analyse a large-scale system by \textbf{mainly focussing on the latest changes} introduced in the system, and by \textbf{re-using previously computed results} as much as possible. \footnote{See more at \href{https://www.youtube.com/watch?v=F7oLVrNWADA&ab_channel=di-unipi-soccresearchgroup}{Continuous Reasoning for Managing Next-Gen Distributed Applications - SOCC Research Group}}
+\end{itemize}
+Surely there are other aspects to be consired as introducing probabilities to model \textbf{infrastructure dynamicity} or \textit{semirings} to model (\textit{non-monotonic,
+conditionally transitive) \textbf{trust relations}} among different stakeholders and, of course, \textbf{infrastructure monitoring and management enactment} as shown in \ref{image-fogArm}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{image-fogArm}
+	\caption{Fog infrastructure monitoring}
+	\label{image-fogArm}
+\end{figure}
+
+\section{Cascading Failures in Microservices}
+A cascading failure is a failure in a system of interconnected parts in which the failure of one or few parts leads to the failure of other parts, growing progressively as a result of positive feedback. This can occur when a single part fails, increasing the probability that other portions of the system fail.\\
+Surely, cascading failures affect also microservice-based application. Determine the root cause of a cascading failure is critical. 
+When a cascing failure happen we must find the main root cause of the error by \textbf{avoiding} the bias of \textit{correlation is causation}. 
+The availability of explanations of root cause analyses would permit to avoid cascading failures by intervening both on the failing service and the services failing in cascade.\\
+Here we use a \textbf{declarative approach to failure root cause analysis for microservices}:
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.2\textwidth]{image-root-cause}
+	\caption{Causal relations between events}
+	\label{image-root-cause}
+\end{figure}
+\begin{enumerate}
+	\item \textit{Define causal relations between events}: referring upper part of \ref{image-root-cause}, we can formulate the scenario as:
+	\begin{center}
+		\textbf{If} service I logged a failure/timeout E at the end of an interaction with J\\
+		\textbf{and} J logged an internal error during such interaction\\
+		\textbf{then} add E to the explanation and analyse the cause of the internal error at J
+	\end{center}
+	Or, referring the lower part of \ref{image-root-cause}, we can formulate as:
+	\begin{center}
+		\textbf{If} service I logged an internal error E\\
+		\textbf{then} I is the root cause of E
+	\end{center}
+	\item \textit{Use the inference engine}:  \texttt{?- causedBy(event, Explanation, RootCause)}
+
+\end{enumerate}
+
+\subsection{Logged events}
+Analysis of (distributed) applications logs containing the \textbf{ID} of the logging \textbf{service} (\textit{like name and instance}), a \textbf{timestamp}, the \textbf{logged event}, like:
+\begin{center}
+
+	\texttt{internal} - internal business logic\\
+	\texttt{sendTo(Dst,Id)} - sent request\\
+	\texttt{received(Id)} - received request\\
+	\texttt{timeout(Dst,Id)} - expired timeout\\
+	\texttt{errorFrom(Dst,Id)} - error reply returned
+
+\end{center}
+and finally the \textbf{(syslog) severity}:
+\begin{center}
+	
+	\texttt{emerg/alert/crit/err} - error\\
+	\texttt{warning} - warning\\
+	\texttt{notice/info/debug} - info\\
+\end{center}
+So, here we present a practical example to \textbf{identify the causal relations} among events occurring in separate service instances. We have \textbf{5 recursive cases} (\ref{fig:base-cases}) and \textbf{3 base cases}:
+\begin{figure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.3\linewidth]{image-rec1}
+		\caption{1a}
+		\label{image-rec1}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.3\linewidth]{image-rec2}
+		\caption{1b}
+		\label{image-rec2}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.3\linewidth]{image-rec3}
+		\caption{1b}
+		\label{image-rec3}
+	\end{subfigure}
+		\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.3\linewidth]{image-rec4}
+		\caption{1b}
+		\label{image-rec4}
+	\end{subfigure}
+		\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.3\linewidth]{image-rec5}
+		\caption{1b}
+		\label{image-rec5}
+	\end{subfigure}
+	\caption{Schema of recursive cases}
+	\label{fig:base-cases}
+\end{figure}
+\begin{enumerate}
+	\item \textbf{Internal error of invoked service instance}: A failure/timeout event E at service I, occurring at the end of an interaction with J, was caused by an internal error at J. Recur to explain the internal error at J. See \ref{image-rec1}.
+	
+	\item \textbf{Failed interaction of invoked service instance}: A failure/timeout
+	event E at service I was caused by a failure event F at J, which in turn
+	was caused by a failed interaction of J with K. Recur to explain the failure
+	event at J. See \ref{image-rec2}.
+	
+	\item \textbf{Timed-out interaction of invoked service instance}:A timeout event at
+	service I was caused by a timeout at J, which in turn was caused by a timeout
+	related to an interaction of J with K. Recur to explain the timeout at J. See \ref{image-rec3}.
+	
+	\item \textbf{Unreachability of a service called by invoked service instance}:A
+	failure/timeout event E at service I was caused by a timeout at J, which
+	occurred since the request sent by J was never received by K. Recur to
+	explain the timeout at J. See \ref{image-rec4}.
+	
+	\item \textbf{Unreachability of invoked service instance}: A timeout event at I was
+	caused by a non-received request in an interaction of I with J. Recur to explain why J was unreachable. See \ref{image-rec5}.
+\end{enumerate}
+And the \textbf{base cases}:
+\begin{enumerate}
+	\item \textbf{Internal service error}: Internal failure event logged by a service, identifying the service itself as the root cause for such an event.
+	\item \textbf{Temporary service unreachability}: Service considered temporarily unreachable as it previously logged some information.
+	\item \textbf{Unstarted service}: Service never logged any information
+\end{enumerate}
+
+
+\subsection{yRCA - Explainable Failure Root Cause Analyzer}
+yRCA enables identifying the possible root causes for a (failure) event to happen in a service instance in a multi-service application, only based on the application logs. The flow is shown in \ref{image-yRCA-flow}. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{image-yRCA-flow}
+	\caption{yRCA flow}
+	\label{image-yRCA-flow}
+\end{figure}
+
+Consider the failure scenario presented in \ref{image-yRCA-example}. The corresponding logs generated by this event are presented in \ref{image-yRCA}.  By applying yRCA to our example we can see that the most probable root cause of the cascading failure is the \textbf{carts} service interaction with orders and, respectively, with frontend as shown in \ref{image-yRCA-result}. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{image-yRCA-example}
+	\caption{yRCA example: failure service example.}
+	\label{image-yRCA-example}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{image-yRCA}
+	\caption{yRCA example: failed service logs.}
+	\label{image-yRCA}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{image-yRCA-result}
+	\caption{yRCA example: RCA result.}
+	\label{image-yRCA-result}
+\end{figure}
+
+We can assess that \textit{yRCA} use controlled experiments with \textit{Chaos Echo} testved like end-user \textbf{load} varying from 1 to 100 requests per second, service \textbf{interaction proability} varying from 0.1 to 1, failure \textbf{cascade length} varying from 1 to 4 and service \textbf{failure probability} verying from 0.1 to 1. So yRCA is avle to successfull detect the failure root cause in 99.74\% of cases with a low number of false positive (\textit{3 explanations in the worst case}). 
+
+
+
 \end{document}
+
